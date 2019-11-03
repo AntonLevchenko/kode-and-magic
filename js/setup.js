@@ -11,6 +11,7 @@ let similarWizardTemplate = document.querySelector('#similar-wizard-template')
 let wizardCoat = userDialog.querySelector('.wizard-coat');
 let wizardEyes = userDialog.querySelector('.wizard-eyes');
 let wizardFireball = userDialog.querySelector('.setup-fireball');
+let dialogHandle = userDialog.querySelector('.upload');
 const COAT_COLORS = [
     'rgb(101, 137, 164)',
     'rgb(241, 43, 107)',
@@ -90,14 +91,28 @@ setupCloser.addEventListener('keydown', function (e) {
 let renderWizard = function (wizard) {
     let wizardElement = similarWizardTemplate.cloneNode(true);
     wizardElement.querySelector('.setup-similar-label').textContent  = wizard.name;
-    wizardElement.querySelector('.wizard-coat').style.fill  = wizard.coatColor;
+    wizardElement.querySelector('.wizard-coat').style.fill  = wizard.colorCoat;
+    wizardElement.querySelector('.wizard-eyes').style.fill  = wizard.colorEyes;
 
     return wizardElement;
 };
 
-for (let i = 0; i < 4; i++) {
-    similarListElement.append( renderWizard(wizards[i]) );
-}
+let showSimilarWizards = function (wizards) {
+    for (let i = 0; i < 4; i++) {
+        similarListElement.append( renderWizard(wizards[i]) );
+    }
+
+    userDialog.querySelector('.setup-similar').classList.remove('hidden');
+};
+
+let onErrorHandler = function(errorMessage) {
+    let node = document.createElement('div');
+    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red; position: absolute; left: 0; right: 0; font-size: 30px;`;
+    node.textContent = errorMessage;
+    document.body.prepend(node);
+};
+
+window.load(showSimilarWizards, onErrorHandler);
 
 function changeColor(type) {
     let colorIndex = 0;
@@ -123,4 +138,54 @@ wizardEyes.addEventListener('click', function (e) {
 });
 wizardFireball.addEventListener('click', function (e) {
     changeFireballColor(e.target, FIREBALL_COLORS);
+});
+
+// drag and drop
+dialogHandle.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    let dragged = false;
+
+    let startCoords = {
+        x: evt.clientX,
+        y: evt.clientY
+    };
+
+    function onMouseMove(moveEvt) {
+        moveEvt.preventDefault();
+
+        dragged = true;
+
+        let shift = {
+            x: startCoords.x - moveEvt.clientX,
+            y: startCoords.y - moveEvt.clientY
+        };
+
+        startCoords = {
+            x: moveEvt.clientX,
+            y: moveEvt.clientY
+        };
+
+        setup.style.top = setup.offsetTop - shift.y + 'px';
+        setup.style.left = setup.offsetLeft - shift.x + 'px';
+    }
+
+    function onMouseUp(upEvt) {
+        upEvt.preventDefault();
+
+        if (dragged) {
+            let onClickPreventDefault = function (evt) {
+                evt.preventDefault();
+                dialogHandle.removeEventListener('click', onClickPreventDefault);
+            };
+
+            dialogHandle.addEventListener('click', onClickPreventDefault);
+        }
+
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
 });
