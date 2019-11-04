@@ -70,6 +70,8 @@ function onPopupEscPress(e) {
 function closePopup() {
     userDialog.classList.add('hidden');
 
+    setup.style.top = null;
+    setup.style.left = null;
     document.removeEventListener('keydown', onPopupEscPress);
 }
 
