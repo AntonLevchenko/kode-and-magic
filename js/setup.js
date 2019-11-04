@@ -11,6 +11,7 @@ let similarWizardTemplate = document.querySelector('#similar-wizard-template')
 let wizardCoat = userDialog.querySelector('.wizard-coat');
 let wizardEyes = userDialog.querySelector('.wizard-eyes');
 let wizardFireball = userDialog.querySelector('.setup-fireball');
+let dialogHandle = userDialog.querySelector('.upload');
 const COAT_COLORS = [
     'rgb(101, 137, 164)',
     'rgb(241, 43, 107)',
@@ -92,14 +93,28 @@ setupCloser.addEventListener('keydown', function (e) {
 let renderWizard = function (wizard) {
     let wizardElement = similarWizardTemplate.cloneNode(true);
     wizardElement.querySelector('.setup-similar-label').textContent  = wizard.name;
-    wizardElement.querySelector('.wizard-coat').style.fill  = wizard.coatColor;
+    wizardElement.querySelector('.wizard-coat').style.fill  = wizard.colorCoat;
+    wizardElement.querySelector('.wizard-eyes').style.fill  = wizard.colorEyes;
 
     return wizardElement;
 };
 
-for (let i = 0; i < 4; i++) {
-    similarListElement.append( renderWizard(wizards[i]) );
-}
+let showSimilarWizards = function (wizards) {
+    for (let i = 0; i < 4; i++) {
+        similarListElement.append( renderWizard(wizards[i]) );
+    }
+
+    userDialog.querySelector('.setup-similar').classList.remove('hidden');
+};
+
+let onErrorHandler = function(errorMessage) {
+    let node = document.createElement('div');
+    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red; position: absolute; left: 0; right: 0; font-size: 30px;`;
+    node.textContent = errorMessage;
+    document.body.prepend(node);
+};
+
+window.load(showSimilarWizards, onErrorHandler);
 
 function changeColor(type) {
     let colorIndex = 0;
