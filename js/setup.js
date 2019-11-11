@@ -100,11 +100,17 @@ let renderWizard = function (wizard) {
 };
 
 let showSimilarWizards = function (wizards) {
+    similarListElement.innerHTML = '';
+
     for (let i = 0; i < 4; i++) {
         similarListElement.append( renderWizard(wizards[i]) );
     }
 
     userDialog.querySelector('.setup-similar').classList.remove('hidden');
+};
+
+window.setup = {
+    showSimilarWizards
 };
 
 let onErrorHandler = function(errorMessage) {
@@ -114,30 +120,4 @@ let onErrorHandler = function(errorMessage) {
     document.body.prepend(node);
 };
 
-window.load(showSimilarWizards, onErrorHandler);
-
-function changeColor(type) {
-    let colorIndex = 0;
-
-    return function(target, colors) {
-        colorIndex = (colorIndex < colors.length - 1) ? ++colorIndex : 0;
-        let color = colors[colorIndex];
-        target.style.fill = color;
-
-        userDialog.querySelector(`[name=${type}-color]`).value = color;
-    };
-}
-
-const changeCoatColor = changeColor('coat');
-const changeEyesColor = changeColor('eyes');
-const changeFireballColor = changeColor('fireball');
-
-wizardCoat.addEventListener('click', function (e) {
-    changeCoatColor(e.target, COAT_COLORS);
-});
-wizardEyes.addEventListener('click', function (e) {
-    changeEyesColor(e.target, EYES_COLORS);
-});
-wizardFireball.addEventListener('click', function (e) {
-    changeFireballColor(e.target, FIREBALL_COLORS);
-});
+// window.load(showSimilarWizards, onErrorHandler);
